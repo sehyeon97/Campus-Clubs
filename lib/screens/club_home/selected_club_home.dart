@@ -24,10 +24,10 @@ class _ClubHomeState extends State<ClubHome> {
   int _selectedIndex = 0;
 
   late final tabs = [
-    Announcements(),
-    Events(),
-    Leaderboard(),
-    GroupChat(),
+    const Announcements(),
+    const Events(),
+    const Leaderboard(),
+    const GroupChat(),
     MeetingTime(
       clubName: widget.club.name,
     ),

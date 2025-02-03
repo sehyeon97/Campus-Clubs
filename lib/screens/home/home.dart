@@ -40,7 +40,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    print(state.name);
     switch (state) {
       case AppLifecycleState.detached:
       // _fetchFirestore();

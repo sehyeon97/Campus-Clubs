@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campus_clubs/models/club.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class Firestore {
   static final fb = FirebaseFirestore.instance;
@@ -28,7 +29,9 @@ class Firestore {
         'joined_clubs': [],
       });
     } on FirebaseAuthException catch (error) {
-      print(error.message ?? 'Authentication failed');
+      if (kDebugMode) {
+        print(error.message ?? 'Authentication failed');
+      }
     }
   }
 
@@ -39,7 +42,7 @@ class Firestore {
     final List usersAvailableClubs = userData.data()!['available_clubs'];
 
     final allClubs = await fb.collection('clubs').get();
-    allClubs.docs.forEach((doc) {
+    for (var doc in allClubs.docs) {
       if (usersAvailableClubs.contains(doc.id)) {
         clubs.add(
           Club(
@@ -50,7 +53,7 @@ class Firestore {
           ),
         );
       }
-    });
+    }
 
     return clubs;
   } // separate into two methods. call the two methods in users_clubs_tab.dart

@@ -26,8 +26,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     startTime();
   }
 
+  // Do not change Duration, otherwise _pageLoad() will not fetch properly
   startTime() async {
-    var duration = const Duration(seconds: 3);
+    var duration = const Duration(seconds: 5);
     return Timer(duration, route);
   }
 
