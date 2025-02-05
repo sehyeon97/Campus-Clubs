@@ -14,14 +14,14 @@ Future<void> main() async {
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 
-class MainApp extends ConsumerStatefulWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
-  ConsumerState<MainApp> createState() => _MainAppState();
+  State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends ConsumerState<MainApp> {
+class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(

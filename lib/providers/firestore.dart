@@ -56,11 +56,30 @@ class Firestore {
     }
 
     return clubs;
-  } // separate into two methods. call the two methods in users_clubs_tab.dart
+  }
 
   // return a list of joined Clubs
-  static Stream<dynamic> loadJoinedClubs(String userID) {
-    return fb.collection('users').doc(userID).snapshots();
+  static Future<List<Club>> loadJoinedClubs(String userID) async {
+    List<Club> clubs = [];
+
+    final userData = await fb.collection('users').doc(userID).get();
+    final List usersJoinedClubs = userData.data()!['joined_clubs'];
+
+    final allClubs = await fb.collection('clubs').get();
+    for (var doc in allClubs.docs) {
+      if (usersJoinedClubs.contains(doc.id)) {
+        clubs.add(
+          Club(
+            name: doc.id,
+            description: doc["description"],
+            president: doc["president"],
+            advisor: doc["advisor"],
+          ),
+        );
+      }
+    }
+
+    return clubs;
   }
 
   // Remove name from user/joined_clubs
@@ -111,5 +130,15 @@ class Firestore {
       "available_clubs": availableClubsNames,
       "joined_clubs": joinedClubsNames,
     }, SetOptions(merge: true));
+  }
+
+  static Future<String> getMeetingTimeFor(String clubName) async {
+    final clubData = await fb.collection('clubs').doc(clubName).get();
+    return clubData.data()!['meeting_time'];
+  }
+
+  static Future<String> getRecommendedTime(String clubName) async {
+    final clubData = await fb.collection('clubs').doc(clubName).get();
+    return clubData.data()!['recommended_time'];
   }
 }
