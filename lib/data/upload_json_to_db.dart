@@ -1,22 +1,19 @@
-import 'dart:convert';
-
+import 'package:campus_clubs/data/retrieve_json.dart';
+import 'package:campus_clubs/models/club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
 
 class UploadJsonToFS {
   static final fb = FirebaseFirestore.instance;
 
   static Future<void> upload() async {
-    String response = await rootBundle.loadString('lib/data/output.json');
-    final List data = await json.decode(response);
-    print('club length: ${data.length}');
+    List<Club> allClubs = await AllClubsFromWeb().getClubsFromWeb();
 
-    for (final club in data) {
-      await fb.collection('clubs').doc(club['title']).set(
+    for (final club in allClubs) {
+      await fb.collection('clubs').doc(club.name).set(
         {
-          'description': club['description'],
-          'president': club['president'],
-          'advisor': club['advisor'],
+          'description': club.description,
+          'president': club.president,
+          'advisor': club.advisor,
           'meeting_time': '',
           'recommended_time': '',
           'announncements': {},

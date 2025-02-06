@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 class AllClubsFromWeb {
   List<Club> clubs = [];
 
-  _populateClubs() async {
+  Future<void> _populateClubs() async {
     String response = await rootBundle.loadString('lib/data/output.json');
     final List data = await json.decode(response);
 
@@ -21,8 +21,8 @@ class AllClubsFromWeb {
     }
   }
 
-  List<Club> getClubsFromWeb() {
-    _populateClubs();
+  Future<List<Club>> getClubsFromWeb() async {
+    await _populateClubs();
     return clubs;
   }
 }

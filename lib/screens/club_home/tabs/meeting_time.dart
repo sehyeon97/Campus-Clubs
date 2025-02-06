@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
+const double heightGap = 50;
 
 class MeetingTime extends StatefulWidget {
   const MeetingTime({
@@ -25,8 +26,8 @@ class MeetingTime extends StatefulWidget {
 // 4) a popup for any errors encountered with appropriate dialogs
 // 5) a button that reveals a form for users to enter a preferred meeting time manually
 class _MeetingTimeState extends State<MeetingTime> {
-  late final String meetingTime;
-  late final String recommendedTime;
+  late String meetingTime;
+  late String recommendedTime;
 
   @override
   void initState() {
@@ -42,18 +43,27 @@ class _MeetingTimeState extends State<MeetingTime> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        const SizedBox(height: heightGap),
         Text('Meeting Time for ${widget.clubName}'),
-        const SizedBox(height: 20),
-        Text(meetingTime),
-        const SizedBox(height: 20),
+        const SizedBox(height: heightGap),
+        Text(
+          meetingTime == ""
+              ? 'Meeting Time has not yet been decided'
+              : meetingTime,
+        ),
+        const SizedBox(height: heightGap),
         const Text("Recommended Time"),
-        const SizedBox(height: 20),
-        Text(recommendedTime),
-        const SizedBox(height: 20),
+        const SizedBox(height: heightGap),
+        Text(
+          recommendedTime == ""
+              ? 'Insufficient information to provide suggestions'
+              : recommendedTime,
+        ),
+        const SizedBox(height: heightGap),
         const Text(
           "Submit your current schedule for the semester to change Recommended Time",
         ),
@@ -63,6 +73,7 @@ class _MeetingTimeState extends State<MeetingTime> {
             // TODO: This should talk with the Platform Channels
           },
         ),
+        const SizedBox(height: heightGap),
       ],
     );
   }
