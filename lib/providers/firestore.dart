@@ -50,6 +50,8 @@ class Firestore {
             description: doc["description"],
             president: doc["president"],
             advisor: doc["advisor"],
+            meetingTime: doc["meeting_time"],
+            recommendedTime: doc["recommended_time"],
           ),
         );
       }
@@ -74,6 +76,8 @@ class Firestore {
             description: doc["description"],
             president: doc["president"],
             advisor: doc["advisor"],
+            meetingTime: doc["meeting_time"],
+            recommendedTime: doc["recommended_time"],
           ),
         );
       }
@@ -140,5 +144,21 @@ class Firestore {
   static Future<String> getRecommendedTime(String clubName) async {
     final clubData = await fb.collection('clubs').doc(clubName).get();
     return clubData.data()!['recommended_time'];
+  }
+
+  static void addUserAsAdmin(Club club) async {
+    final clubData = await fb.collection('clubs').doc(club.name).get();
+    List admins = clubData.data()!['admins'];
+    admins.add(fbAuth.currentUser!.uid);
+
+    await fb.collection('clubs').doc(club.name).update({
+      'admins': admins,
+    });
+  }
+
+  static Future<bool> isAdmin(Club club) async {
+    final clubData = await fb.collection('clubs').doc(club.name).get();
+    final List admins = clubData.data()!['admins'];
+    return admins.contains(fbAuth.currentUser!.uid);
   }
 }

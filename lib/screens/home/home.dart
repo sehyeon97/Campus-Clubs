@@ -1,4 +1,3 @@
-import 'package:campus_clubs/data/upload_json_to_db.dart';
 import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
@@ -31,6 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _setUserJoinedClubs();
   }
 
   @override
@@ -44,9 +44,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.detached:
-        _setUserJoinedClubs();
+      // _setUserJoinedClubs();
       case AppLifecycleState.resumed:
-        _doSomething();
+      // _doSomething();
       case AppLifecycleState.inactive:
         _updateFireStore();
       case AppLifecycleState.hidden:
@@ -54,10 +54,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       case AppLifecycleState.paused:
         _updateFireStore();
     }
-  }
-
-  void _doSomething() async {
-    await UploadJsonToFS.upload();
   }
 
   void _setUserJoinedClubs() async {

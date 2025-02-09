@@ -1,20 +1,20 @@
-import 'package:campus_clubs/providers/firestore.dart';
+import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
 const double heightGap = 50;
 
-class MeetingTime extends StatefulWidget {
+class MeetingTime extends ConsumerStatefulWidget {
   const MeetingTime({
     super.key,
-    required this.clubName,
   });
-  final String clubName;
 
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<MeetingTime> createState() {
     return _MeetingTimeState();
   }
 }
@@ -25,43 +25,31 @@ class MeetingTime extends StatefulWidget {
 // 3) a button for user to submit the pdf version of their schedule
 // 4) a popup for any errors encountered with appropriate dialogs
 // 5) a button that reveals a form for users to enter a preferred meeting time manually
-class _MeetingTimeState extends State<MeetingTime> {
-  late String meetingTime;
-  late String recommendedTime;
-
-  @override
-  void initState() {
-    super.initState();
-    setTimeVariables();
-  }
-
-  void setTimeVariables() async {
-    meetingTime = await Firestore.getMeetingTimeFor(widget.clubName);
-    recommendedTime = await Firestore.getRecommendedTime(widget.clubName);
-  }
-
+class _MeetingTimeState extends ConsumerState<MeetingTime> {
   @override
   Widget build(BuildContext context) {
+    final Club club = ref.watch(selectedClubProvider);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: heightGap),
-        Text('Meeting Time for ${widget.clubName}'),
+        Text('Meeting Time for ${club.name}'),
         const SizedBox(height: heightGap),
         Text(
-          meetingTime == ""
+          club.meetingTime == ""
               ? 'Meeting Time has not yet been decided'
-              : meetingTime,
+              : club.meetingTime,
         ),
         const SizedBox(height: heightGap),
         const Text("Recommended Time"),
         const SizedBox(height: heightGap),
         Text(
-          recommendedTime == ""
+          club.recommendedTime == ""
               ? 'Insufficient information to provide suggestions'
-              : recommendedTime,
+              : club.recommendedTime,
         ),
         const SizedBox(height: heightGap),
         const Text(

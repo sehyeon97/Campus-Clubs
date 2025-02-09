@@ -1,11 +1,9 @@
-import 'package:campus_clubs/models/club.dart';
-
 class User {
   User({
     required this.name,
-    required this.userClubs,
+    required this.clubAdminFor,
   });
 
   final String name;
-  List<Club> userClubs;
+  final String clubAdminFor;
 }

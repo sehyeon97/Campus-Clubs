@@ -7,7 +7,9 @@ class UsersJoinedClubs extends StateNotifier<List<Club>> {
   UsersJoinedClubs() : super([]);
 
   void set(List<Club> clubs) {
-    state = clubs;
+    if (state.isEmpty) {
+      state = clubs;
+    }
   }
 
   void add(Club club) {

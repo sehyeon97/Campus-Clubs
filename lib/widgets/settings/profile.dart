@@ -1,13 +1,16 @@
+import 'package:campus_clubs/providers/firestore.dart';
+import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Profile extends StatefulWidget {
+class Profile extends ConsumerStatefulWidget {
   const Profile({super.key});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  ConsumerState<Profile> createState() => _ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends ConsumerState<Profile> {
   final textController = TextEditingController();
 
   @override
@@ -42,9 +45,11 @@ class _ProfileState extends State<Profile> {
           ),
           OutlinedButton(
             onPressed: () {
+              // TODO: This will not be necessary when web scraping extracts president and advisor
               final SnackBar snackBar;
               if (textController.text == '1234') {
                 snackBar = const SnackBar(content: Text('Access Granted.'));
+                Firestore.addUserAsAdmin(ref.watch(selectedClubProvider));
               } else {
                 snackBar =
                     const SnackBar(content: Text('Access cannot be granted.'));

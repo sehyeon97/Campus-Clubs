@@ -1,4 +1,7 @@
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/providers/firestore.dart';
+import 'package:campus_clubs/providers/selected_club_provider.dart';
+import 'package:campus_clubs/providers/user_role_provider.dart';
 import 'package:campus_clubs/screens/club_home/tabs/leaderboard.dart';
 import 'package:campus_clubs/screens/club_home/tabs/meeting_time.dart';
 import 'package:campus_clubs/screens/home/home.dart';
@@ -7,36 +10,46 @@ import 'package:campus_clubs/screens/club_home/tabs/events.dart';
 import 'package:campus_clubs/screens/club_home/tabs/group_chat.dart';
 import 'package:campus_clubs/widgets/settings/settings_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClubHome extends StatefulWidget {
+class ClubHome extends ConsumerStatefulWidget {
   const ClubHome({
     super.key,
-    required this.club,
   });
 
-  final Club club;
-
   @override
-  State<ClubHome> createState() => _ClubHomeState();
+  ConsumerState<ClubHome> createState() => _ClubHomeState();
 }
 
-class _ClubHomeState extends State<ClubHome> {
+class _ClubHomeState extends ConsumerState<ClubHome> {
   int _selectedIndex = 0;
 
-  late final tabs = [
-    const Announcements(),
-    const Events(),
-    const Leaderboard(),
-    const GroupChat(),
-    MeetingTime(
-      clubName: widget.club.name,
-    ),
+  late final tabs = const [
+    Announcements(),
+    Events(),
+    Leaderboard(),
+    GroupChat(),
+    MeetingTime(),
   ];
 
   void onDrawerItemTap(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _assignUserRole();
+  }
+
+  // is the user an admin or member of said club
+  void _assignUserRole() async {
+    final Club club = ref.watch(selectedClubProvider);
+    if (await Firestore.isAdmin(club)) {
+      ref.read(userRoleProvider.notifier).set(club.name);
+    }
   }
 
   @override
@@ -53,7 +66,7 @@ class _ClubHomeState extends State<ClubHome> {
             );
           },
         ),
-        title: Text(widget.club.name),
+        title: Text(ref.watch(selectedClubProvider).name),
         centerTitle: true,
         actions: [
           IconButton(

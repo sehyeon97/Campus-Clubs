@@ -1,4 +1,6 @@
+import 'package:campus_clubs/providers/feedback.dart';
 import 'package:campus_clubs/providers/firestore.dart';
+import 'package:email_auth/email_auth.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -21,14 +23,43 @@ class _LoginState extends State<Login> {
       return;
     }
 
+    if (!_validateEmail()) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
+      return;
+    }
+
     _form.currentState!.save();
 
     // this sends a HTTP request to firebase behind the scenes
     if (_isLogin) {
       await Firestore.loginUser(_enteredEmail, _enteredPassword);
     } else {
+      setRolesForUser();
       await Firestore.createUser(_enteredEmail, _enteredPassword);
     }
+  }
+
+  bool _validateEmail() {
+    return _enteredEmail.endsWith('@calbaptist.edu') &&
+        _enteredEmail.length < 16;
+  }
+
+  Future<bool> _sendOTP() async {
+    EmailAuth emailAuth = EmailAuth(sessionName: 'Verify Login');
+    return await emailAuth.sendOtp(recipientMail: _enteredEmail, otpLength: 5);
+  }
+
+  // call when user signs up for the first time
+  void setRolesForUser() {
+    // if output.json has the entered email on file, retrieve club name.
+    // get the club data on FS and add this person's email to admin email list
+    // Make sure that if admin list is already size two,
+    // remove the former president/advisor and add this user.
+    // We do this by calling upload_json_to_db.dart file.
+    // Make sure that the json file is up to date.
+    // this may need to be done in a different file if
+    // the user is already registered into the system
   }
 
   void setIsLogin(bool isLogin) {
@@ -75,8 +106,20 @@ class _LoginState extends State<Login> {
               ),
               const SizedBox(height: 14),
               ElevatedButton(
-                onPressed: () {
-                  _submit();
+                onPressed: () async {
+                  bool isLoginAllowed = false;
+                  if (!_isLogin) {
+                    if (await _sendOTP()) {
+                      isLoginAllowed = true;
+                    }
+                  }
+
+                  if (isLoginAllowed) {
+                    _submit();
+                  } else {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
+                  }
                 },
                 child: Text(_isLogin ? 'Login' : 'Signup'),
               ),

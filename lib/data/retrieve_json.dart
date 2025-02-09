@@ -16,6 +16,8 @@ class AllClubsFromWeb {
           description: obj["description"],
           president: obj["president"],
           advisor: obj["advisor"],
+          meetingTime: "",
+          recommendedTime: "",
         ),
       );
     }

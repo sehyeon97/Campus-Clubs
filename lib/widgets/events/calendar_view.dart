@@ -4,15 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarView extends ConsumerWidget {
+class CalendarView extends ConsumerStatefulWidget {
   const CalendarView({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _CalendarViewState();
+  }
+}
+
+class _CalendarViewState extends ConsumerState<CalendarView> {
+  @override
+  Widget build(BuildContext context) {
     final DateTime today = DateTime.now();
     final semester = ref.watch(eventSemesterProvider);
+
+    void _eventPopup() {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [],
+                ),
+              ),
+            );
+          });
+    }
 
     if (semester == Semester.fall) {
       return TableCalendar(
@@ -21,7 +42,7 @@ class CalendarView extends ConsumerWidget {
           titleCentered: true,
           formatButtonVisible: false,
         ),
-        focusedDay: DateTime(today.year - 1, 9, 5),
+        focusedDay: today,
         firstDay: DateTime(
           today.year - 1,
           9,
@@ -43,7 +64,7 @@ class CalendarView extends ConsumerWidget {
         titleCentered: true,
         formatButtonVisible: false,
       ),
-      focusedDay: DateTime(today.year, 1, 1),
+      focusedDay: today,
       firstDay: DateTime(
         today.year,
         1,

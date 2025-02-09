@@ -19,7 +19,16 @@ final eventViewProvider =
 
 // by default the user sees fall semester
 class EventSemesterProvider extends StateNotifier<Semester> {
-  EventSemesterProvider() : super(Semester.spring);
+  EventSemesterProvider() : super(_init());
+
+  static Semester _init() {
+    DateTime today = DateTime.now();
+    if (today.month >= 1 && today.month <= 4) {
+      return Semester.spring;
+    }
+
+    return Semester.fall;
+  }
 
   void setSemester(Semester semester) {
     state = semester;

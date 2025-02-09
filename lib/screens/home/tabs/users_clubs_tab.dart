@@ -1,4 +1,5 @@
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
 import 'package:campus_clubs/providers/users_joined_clubs.dart';
 import 'package:campus_clubs/screens/club_home/selected_club_home.dart';
@@ -87,18 +88,21 @@ class _UsersClubsState extends ConsumerState<UsersClubs> {
                 );
               },
               onPressed: () {
+                ref.read(selectedClubProvider.notifier).setClub(
+                      Club(
+                        name: joinedClubs[index].name,
+                        description: joinedClubs[index].description,
+                        president: joinedClubs[index].president,
+                        advisor: joinedClubs[index].advisor,
+                        meetingTime: joinedClubs[index].meetingTime,
+                        recommendedTime: joinedClubs[index].recommendedTime,
+                      ),
+                    );
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return ClubHome(
-                        club: Club(
-                          name: joinedClubs[index].name,
-                          description: joinedClubs[index].description,
-                          president: joinedClubs[index].president,
-                          advisor: joinedClubs[index].advisor,
-                        ),
-                      );
+                      return const ClubHome();
                     },
                   ),
                 );
