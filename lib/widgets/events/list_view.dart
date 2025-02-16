@@ -1,6 +1,5 @@
 import 'package:campus_clubs/models/event_filters/event_semester.dart';
 import 'package:campus_clubs/providers/event_filter_provider.dart';
-import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:campus_clubs/providers/user_role_provider.dart';
 import 'package:flutter/material.dart';

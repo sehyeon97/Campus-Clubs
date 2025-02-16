@@ -40,4 +40,12 @@ class FeedbackSystem {
     return SnackBar(
         content: Text("Cannot send message. Wait $pauseTimer seconds"));
   }
+
+  static SnackBar getSuccessfullyJoinedClubFeedback(String clubName) {
+    return SnackBar(content: Text("Successfully joined $clubName"));
+  }
+
+  static SnackBar getLeftClubFeedback(String clubName) {
+    return SnackBar(content: Text("Left $clubName"));
+  }
 }

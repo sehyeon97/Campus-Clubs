@@ -4,25 +4,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 class Firestore {
-  static final fb = FirebaseFirestore.instance;
-  static final fbAuth = FirebaseAuth.instance;
+  static final _fb = FirebaseFirestore.instance;
+  static final _fbAuth = FirebaseAuth.instance;
 
   static Future<void> loginUser(String email, String password) async {
-    await fbAuth.signInWithEmailAndPassword(email: email, password: password);
+    await _fbAuth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   static Future<void> createUser(String email, String password) async {
     try {
-      final userCredentials = await fbAuth.createUserWithEmailAndPassword(
+      final userCredentials = await _fbAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      final snapshot = await fb.collection('clubs').get();
+      final snapshot = await _fb.collection('clubs').get();
       final clubs = snapshot.docs;
       List<String> availableClubs = [];
       for (var club in clubs) {
         availableClubs.add(club.id);
       }
 
-      await fb.collection('users').doc(userCredentials.user!.uid).set({
+      await _fb.collection('users').doc(userCredentials.user!.uid).set({
         'name': 'Everyone has the same name',
         'email': email,
         'available_clubs': availableClubs,
@@ -38,10 +38,10 @@ class Firestore {
   // return a list of available Clubs
   static Future<List<Club>> loadAvailableClubs(String userID) async {
     List<Club> clubs = [];
-    final userData = await fb.collection('users').doc(userID).get();
+    final userData = await _fb.collection('users').doc(userID).get();
     final List usersAvailableClubs = userData.data()!['available_clubs'];
 
-    final allClubs = await fb.collection('clubs').get();
+    final allClubs = await _fb.collection('clubs').get();
     for (var doc in allClubs.docs) {
       if (usersAvailableClubs.contains(doc.id)) {
         clubs.add(
@@ -64,10 +64,10 @@ class Firestore {
   static Future<List<Club>> loadJoinedClubs(String userID) async {
     List<Club> clubs = [];
 
-    final userData = await fb.collection('users').doc(userID).get();
+    final userData = await _fb.collection('users').doc(userID).get();
     final List usersJoinedClubs = userData.data()!['joined_clubs'];
 
-    final allClubs = await fb.collection('clubs').get();
+    final allClubs = await _fb.collection('clubs').get();
     for (var doc in allClubs.docs) {
       if (usersJoinedClubs.contains(doc.id)) {
         clubs.add(
@@ -88,7 +88,7 @@ class Firestore {
 
   // Remove name from user/joined_clubs
   static void removeClub(String clubName, String userID) async {
-    final userData = await fb.collection('users').doc(userID).get();
+    final userData = await _fb.collection('users').doc(userID).get();
 
     List joinedClubs = userData.data()!['joined_clubs'];
     joinedClubs.removeWhere((name) => name == clubName);
@@ -96,7 +96,7 @@ class Firestore {
     List availableClubs = userData.data()!['available_clubs'];
     availableClubs.add(clubName);
 
-    await fb.collection('users').doc(userID).set({
+    await _fb.collection('users').doc(userID).set({
       "joined_clubs": joinedClubs,
       "available_clubs": availableClubs,
     }, SetOptions(merge: true));
@@ -104,7 +104,7 @@ class Firestore {
 
   // Add name to user/joined_clubs
   static void addClub(String clubName, String userID) async {
-    final userData = await fb.collection('users').doc(userID).get();
+    final userData = await _fb.collection('users').doc(userID).get();
 
     List joinedClubs = userData.data()!['joined_clubs'];
     joinedClubs.add(clubName);
@@ -112,7 +112,7 @@ class Firestore {
     List availableClubs = userData.data()!['available_clubs'];
     availableClubs.removeWhere((name) => name == clubName);
 
-    await fb.collection('users').doc(userID).set({
+    await _fb.collection('users').doc(userID).set({
       "joined_clubs": joinedClubs,
       "available_clubs": availableClubs,
     }, SetOptions(merge: true));
@@ -130,35 +130,37 @@ class Firestore {
       joinedClubsNames.add(club.name);
     }
 
-    await fb.collection('users').doc(userID).set({
+    await _fb.collection('users').doc(userID).set({
       "available_clubs": availableClubsNames,
       "joined_clubs": joinedClubsNames,
     }, SetOptions(merge: true));
   }
 
   static Future<String> getMeetingTimeFor(String clubName) async {
-    final clubData = await fb.collection('clubs').doc(clubName).get();
+    final clubData = await _fb.collection('clubs').doc(clubName).get();
     return clubData.data()!['meeting_time'];
   }
 
   static Future<String> getRecommendedTime(String clubName) async {
-    final clubData = await fb.collection('clubs').doc(clubName).get();
+    final clubData = await _fb.collection('clubs').doc(clubName).get();
     return clubData.data()!['recommended_time'];
   }
 
-  static void addUserAsAdmin(Club club) async {
-    final clubData = await fb.collection('clubs').doc(club.name).get();
-    List admins = clubData.data()!['admins'];
-    admins.add(fbAuth.currentUser!.uid);
-
-    await fb.collection('clubs').doc(club.name).update({
-      'admins': admins,
-    });
+  // is called when current (former) president / advisor wants to transfer
+  // ownership to new (replacing) president / advisor
+  // they will want to do this after changing emails on CBU Clubs website info
+  static void updateAdminList(Club club) async {
+    return;
   }
 
   static Future<bool> isAdmin(Club club) async {
-    final clubData = await fb.collection('clubs').doc(club.name).get();
-    final List admins = clubData.data()!['admins'];
-    return admins.contains(fbAuth.currentUser!.uid);
+    final clubData = await _fb.collection('clubs').doc(club.name).get();
+    final List<String> admins = clubData.data()!['admins'];
+
+    final userData =
+        await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
+    final String userEmail = userData.data()!['email'];
+
+    return admins.contains(userEmail);
   }
 }

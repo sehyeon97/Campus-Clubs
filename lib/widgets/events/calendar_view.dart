@@ -42,7 +42,11 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
           titleCentered: true,
           formatButtonVisible: false,
         ),
-        focusedDay: today,
+        focusedDay: DateTime(
+          today.year - 1,
+          9,
+          1,
+        ),
         firstDay: DateTime(
           today.year - 1,
           9,

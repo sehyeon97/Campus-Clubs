@@ -12,6 +12,13 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _form = GlobalKey<FormState>();
+  late EmailAuth emailAuth;
+
+  @override
+  void initState() {
+    super.initState();
+    emailAuth = EmailAuth(sessionName: 'Verify Login');
+  }
 
   bool _isLogin = true;
   String _enteredEmail = '';
@@ -23,11 +30,11 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    if (!_validateEmail()) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
-      return;
-    }
+    // if (!_validateEmail()) {
+    //   ScaffoldMessenger.of(context)
+    //       .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
+    //   return;
+    // }
 
     _form.currentState!.save();
 
@@ -35,32 +42,21 @@ class _LoginState extends State<Login> {
     if (_isLogin) {
       await Firestore.loginUser(_enteredEmail, _enteredPassword);
     } else {
-      setRolesForUser();
       await Firestore.createUser(_enteredEmail, _enteredPassword);
     }
   }
 
-  bool _validateEmail() {
-    return _enteredEmail.endsWith('@calbaptist.edu') &&
-        _enteredEmail.length < 16;
-  }
+  // bool _validateEmail() {
+  //   return _enteredEmail.endsWith('@calbaptist.edu') &&
+  //       _enteredEmail.length < 16;
+  // }
 
   Future<bool> _sendOTP() async {
-    EmailAuth emailAuth = EmailAuth(sessionName: 'Verify Login');
     return await emailAuth.sendOtp(recipientMail: _enteredEmail, otpLength: 5);
   }
 
-  // call when user signs up for the first time
-  void setRolesForUser() {
-    // if output.json has the entered email on file, retrieve club name.
-    // get the club data on FS and add this person's email to admin email list
-    // Make sure that if admin list is already size two,
-    // remove the former president/advisor and add this user.
-    // We do this by calling upload_json_to_db.dart file.
-    // Make sure that the json file is up to date.
-    // this may need to be done in a different file if
-    // the user is already registered into the system
-  }
+  // make upload_json_to_db.dart also upload each club's president and advisor
+  // emails to the respective club data admin email list in FireStore
 
   void setIsLogin(bool isLogin) {
     setState(() {
@@ -107,19 +103,19 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 14),
               ElevatedButton(
                 onPressed: () async {
-                  bool isLoginAllowed = false;
-                  if (!_isLogin) {
-                    if (await _sendOTP()) {
-                      isLoginAllowed = true;
-                    }
-                  }
+                  // bool isLoginAllowed = false;
+                  // if (!_isLogin) {
+                  //   if (await _sendOTP()) {
+                  //     isLoginAllowed = true;
+                  //   }
+                  // }
 
-                  if (isLoginAllowed) {
-                    _submit();
-                  } else {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
-                  }
+                  // if (isLoginAllowed) {
+                  _submit();
+                  // } else {
+                  //   ScaffoldMessenger.of(context)
+                  //       .showSnackBar(FeedbackSystem.getInvalidEmailFeedback());
+                  // }
                 },
                 child: Text(_isLogin ? 'Login' : 'Signup'),
               ),

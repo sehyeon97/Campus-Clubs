@@ -68,6 +68,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     if (availableClubs.length != originalAvailableClubs.length) {
       await Firestore.updateAvailableAndJoinedClubs(
           availableClubs, ref.watch(userJoinedClubsProvider), userID);
+    } else {
+      int diff = 0;
+      for (int i = 0; i < availableClubs.length; i++) {
+        if (availableClubs[i].name != originalAvailableClubs[i].name) {
+          originalAvailableClubs[i] = availableClubs[i];
+          diff++;
+        }
+
+        if (diff > 0) {
+          Firestore.updateAvailableAndJoinedClubs(originalAvailableClubs,
+              ref.watch(userJoinedClubsProvider), userID);
+        }
+      }
     }
   }
 

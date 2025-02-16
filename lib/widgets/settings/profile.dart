@@ -49,7 +49,6 @@ class _ProfileState extends ConsumerState<Profile> {
               final SnackBar snackBar;
               if (textController.text == '1234') {
                 snackBar = const SnackBar(content: Text('Access Granted.'));
-                Firestore.addUserAsAdmin(ref.watch(selectedClubProvider));
               } else {
                 snackBar =
                     const SnackBar(content: Text('Access cannot be granted.'));

@@ -154,7 +154,13 @@ class _FilterEventsState extends ConsumerState<FilterEvents> {
                       Center(
                         child: TextButton(
                           onPressed: () {
-                            widget.rebuild(Semester.fall, EventView.calendar);
+                            if (DateTime.now().month >= 1 &&
+                                DateTime.now().month <= 4) {
+                              widget.rebuild(
+                                  Semester.spring, EventView.calendar);
+                            } else {
+                              widget.rebuild(Semester.fall, EventView.calendar);
+                            }
                             Navigator.of(context).pop();
                           },
                           child: const Text('Reset to default'),

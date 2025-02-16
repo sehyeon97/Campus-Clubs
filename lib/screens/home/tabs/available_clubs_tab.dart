@@ -1,4 +1,5 @@
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/providers/feedback.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
 import 'package:campus_clubs/providers/users_joined_clubs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,6 +51,10 @@ class _AvailableClubsState extends ConsumerState<AvailableClubs> {
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    FeedbackSystem
+                                        .getSuccessfullyJoinedClubFeedback(
+                                            availableClubs[index].name));
                                 ref
                                     .read(userJoinedClubsProvider.notifier)
                                     .add(availableClubs[index]);

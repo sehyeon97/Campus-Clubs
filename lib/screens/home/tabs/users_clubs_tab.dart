@@ -1,4 +1,5 @@
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/providers/feedback.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
 import 'package:campus_clubs/providers/users_joined_clubs.dart';
@@ -62,6 +63,10 @@ class _UsersClubsState extends ConsumerState<UsersClubs> {
                             children: [
                               TextButton(
                                 onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      FeedbackSystem
+                                          .getSuccessfullyJoinedClubFeedback(
+                                              joinedClubs[index].name));
                                   ref
                                       .read(userAvailableProvider.notifier)
                                       .add(joinedClubs[index]);
