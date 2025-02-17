@@ -2,6 +2,7 @@ import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
@@ -26,6 +27,25 @@ class MeetingTime extends ConsumerStatefulWidget {
 // 4) a popup for any errors encountered with appropriate dialogs
 // 5) a button that reveals a form for users to enter a preferred meeting time manually
 class _MeetingTimeState extends ConsumerState<MeetingTime> {
+  static const platform = MethodChannel('java/bestTimes');
+
+  String _time = "Unknown";
+
+  Future<void> _getMain() async {
+    String time;
+    try {
+      final result = await platform.invokeMethod<String>('runMain');
+      time = 'Result: $result';
+    } on PlatformException catch (e) {
+      time = 'Failed to run method.';
+    }
+
+    setState(() {
+      _time = time;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final Club club = ref.watch(selectedClubProvider);
@@ -58,10 +78,11 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
         OutlinedButton(
           child: const Text("Submit School Schedule"),
           onPressed: () {
-            // TODO: This should talk with the Platform Channels
+            _getMain();
           },
         ),
         const SizedBox(height: heightGap),
+        Text(_time),
       ],
     );
   }
