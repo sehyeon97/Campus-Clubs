@@ -2,6 +2,7 @@ import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:campus_clubs/providers/user_role_provider.dart';
+import 'package:campus_clubs/screens/club_home/tabs/home.dart';
 import 'package:campus_clubs/screens/club_home/tabs/leaderboard.dart';
 import 'package:campus_clubs/screens/club_home/tabs/meeting_time.dart';
 import 'package:campus_clubs/screens/home/home.dart';
@@ -23,14 +24,6 @@ class ClubHome extends ConsumerStatefulWidget {
 
 class _ClubHomeState extends ConsumerState<ClubHome> {
   int _selectedIndex = 0;
-
-  late final tabs = const [
-    Announcements(),
-    Events(),
-    Leaderboard(),
-    GroupChat(),
-    MeetingTime(),
-  ];
 
   void onDrawerItemTap(int index) {
     setState(() {
@@ -54,6 +47,15 @@ class _ClubHomeState extends ConsumerState<ClubHome> {
 
   @override
   Widget build(BuildContext context) {
+    final tabs = [
+      Home(onDrawerItemTap: onDrawerItemTap),
+      const Announcements(),
+      const Events(),
+      const Leaderboard(),
+      const GroupChat(),
+      const MeetingTime(),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
@@ -100,37 +102,44 @@ class _ClubHomeState extends ConsumerState<ClubHome> {
           children: [
             const DrawerHeader(child: Text('Menu')),
             ListTile(
-              title: const Text('Announcements'),
+              title: const Text('Home'),
               onTap: () {
                 onDrawerItemTap(0);
                 Navigator.of(context).pop();
               },
             ),
             ListTile(
-              title: const Text('Events'),
+              title: const Text('Announcements'),
               onTap: () {
                 onDrawerItemTap(1);
                 Navigator.of(context).pop();
               },
             ),
             ListTile(
-              title: const Text('Rankings'),
+              title: const Text('Events'),
               onTap: () {
                 onDrawerItemTap(2);
                 Navigator.of(context).pop();
               },
             ),
             ListTile(
-              title: const Text('Chat'),
+              title: const Text('Rankings'),
               onTap: () {
                 onDrawerItemTap(3);
                 Navigator.of(context).pop();
               },
             ),
             ListTile(
-              title: const Text('Meeting Time'),
+              title: const Text('Chat'),
               onTap: () {
                 onDrawerItemTap(4);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              title: const Text('Meeting Time'),
+              onTap: () {
+                onDrawerItemTap(5);
                 Navigator.of(context).pop();
               },
             ),

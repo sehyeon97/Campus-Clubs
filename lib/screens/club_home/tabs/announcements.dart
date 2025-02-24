@@ -5,6 +5,11 @@ class Announcements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Unimplemented atm"));
+    return const Padding(
+      padding: const EdgeInsets.all(20),
+      child: Text(
+        "Announcements"
+      )
+    );
   }
 }

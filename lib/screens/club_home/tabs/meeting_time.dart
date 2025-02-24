@@ -35,9 +35,11 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
     String time;
     try {
       final result = await platform.invokeMethod<String>('runMain');
-      time = 'Result: $result';
+      time = '$result';
     } on PlatformException catch (e) {
-      time = 'Failed to run method.';
+      time = 'Platform not supported';
+    } on MissingPluginException catch (e) {
+      time = 'Method not found';
     }
 
     setState(() {
@@ -49,7 +51,6 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
   @override
   Widget build(BuildContext context) {
     final Club club = ref.watch(selectedClubProvider);
-    _time = club.recommendedTime.isEmpty ? 'Unknown' : club.recommendedTime;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -91,7 +92,7 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
               const SizedBox(width: 10),
               Expanded(
                 child: AspectRatio(
-                  aspectRatio: 1.5, // Forces a square shape
+                  aspectRatio: 1.5,
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -139,7 +140,7 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
               foregroundColor: Colors.white,
               side: const BorderSide(color: Colors.grey),
             ),
-            child: const Text("Submit School Schedule"),
+            child: const Text("Find Best Time"),
             onPressed: () {
               _getMain();
             },
