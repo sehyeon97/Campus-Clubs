@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
-const double heightGap = 50;
+const double heightGap = 25;
 
 class MeetingTime extends ConsumerStatefulWidget {
   const MeetingTime({
@@ -49,41 +49,103 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
   @override
   Widget build(BuildContext context) {
     final Club club = ref.watch(selectedClubProvider);
+    _time = club.recommendedTime.isEmpty ? 'Unknown' : club.recommendedTime;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: heightGap),
-        Text('Meeting Time for ${club.name}'),
-        const SizedBox(height: heightGap),
-        Text(
-          club.meetingTime == ""
-              ? 'Meeting Time has not yet been decided'
-              : club.meetingTime,
-        ),
-        const SizedBox(height: heightGap),
-        const Text("Recommended Time"),
-        const SizedBox(height: heightGap),
-        Text(
-          club.recommendedTime == ""
-              ? 'Insufficient information to provide suggestions'
-              : club.recommendedTime,
-        ),
-        const SizedBox(height: heightGap),
-        const Text(
-          "Submit your current schedule for the semester to change Recommended Time",
-        ),
-        OutlinedButton(
-          child: const Text("Submit School Schedule"),
-          onPressed: () {
-            _getMain();
-          },
-        ),
-        const SizedBox(height: heightGap),
-        Text(_time),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1.5,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Meeting Time',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          club.meetingTime.isEmpty
+                              ? 'Unknown'
+                              : club.meetingTime,
+                          style: const TextStyle(color: Colors.white70),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1.5, // Forces a square shape
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Recommended",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _time,
+                          style: const TextStyle(color: Colors.white70),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: heightGap * 2),
+          Container(
+            padding: const EdgeInsets.all(16),
+            width: 300, // TODO: Change to ratio in context of screen width
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Text(
+              "Submit your current schedule for the semester to update time",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: heightGap),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: const BorderSide(color: Colors.grey),
+            ),
+            child: const Text("Submit School Schedule"),
+            onPressed: () {
+              _getMain();
+            },
+          ),
+        ],
+      ),
     );
   }
 }
