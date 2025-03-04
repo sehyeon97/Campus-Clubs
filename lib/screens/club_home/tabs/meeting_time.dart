@@ -47,7 +47,6 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final Club club = ref.watch(selectedClubProvider);

@@ -10,7 +10,8 @@ class SelectedClubProvider extends StateNotifier<Club> {
               president: 'president',
               advisor: 'advisor',
               meetingTime: 'meeting time',
-              recommendedTime: 'recommended time'),
+              recommendedTime: 'recommended time'
+          )
         );
 
   void setClub(Club club) {
