@@ -101,6 +101,8 @@ class _UsersClubsState extends ConsumerState<UsersClubs> {
                         advisor: joinedClubs[index].advisor,
                         meetingTime: joinedClubs[index].meetingTime,
                         recommendedTime: joinedClubs[index].recommendedTime,
+                        adminEmails: joinedClubs[index].adminEmails,
+                        adminIDs: joinedClubs[index].adminIDs,
                       ),
                     );
                 Navigator.pushReplacement(

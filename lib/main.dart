@@ -1,3 +1,5 @@
+import 'package:campus_clubs/data/upload_json_to_db.dart';
+import 'package:campus_clubs/notification_service.dart';
 import 'package:campus_clubs/screens/login/login.dart';
 import 'package:campus_clubs/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await NotificationService().init();
+  // await UploadJsonToFS.upload();
   runApp(const MainApp());
 }
 

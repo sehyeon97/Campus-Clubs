@@ -1,3 +1,4 @@
+import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class _ProfileState extends ConsumerState<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    final Club selectedClub = ref.watch(selectedClubProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,6 +57,10 @@ class _ProfileState extends ConsumerState<Profile> {
                     const SnackBar(content: Text('Access cannot be granted.'));
               }
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+              // check if user's uid exists in adminID first
+              // add this user's uid to adminID
+              Firestore.isAdmin(selectedClub);
             },
             child: const Text('Get Access'),
           ),

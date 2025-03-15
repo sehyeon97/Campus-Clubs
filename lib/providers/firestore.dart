@@ -52,6 +52,8 @@ class Firestore {
             advisor: doc["advisor"],
             meetingTime: doc["meeting_time"],
             recommendedTime: doc["recommended_time"],
+            adminEmails: doc["admin_emails"] ?? [],
+            adminIDs: doc["admin_ids"],
           ),
         );
       }
@@ -78,6 +80,8 @@ class Firestore {
             advisor: doc["advisor"],
             meetingTime: doc["meeting_time"],
             recommendedTime: doc["recommended_time"],
+            adminEmails: doc["admin_emails"],
+            adminIDs: doc["admin_ids"],
           ),
         );
       }
@@ -153,14 +157,30 @@ class Firestore {
     return;
   }
 
+  // Pull up all users and get this user's email using user ID
+  // check all clubs and see if this email belongs to one of the clubs
+  // if the email matches with the club passed, return true
   static Future<bool> isAdmin(Club club) async {
-    final clubData = await _fb.collection('clubs').doc(club.name).get();
-    final List<String> admins = clubData.data()!['admins'];
+    final usersData = await _fb.collection('users').get();
+    String userEmail = "";
 
-    final userData =
-        await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
-    final String userEmail = userData.data()!['email'];
+    for (var userData in usersData.docs) {
+      final String userID = userData.id;
+      if (userID == _fbAuth.currentUser!.uid) {
+        userEmail = userData.data()["email"];
+      }
+    }
 
-    return admins.contains(userEmail);
+    if (userEmail != "") {
+      final clubsData = await _fb.collection('clubs').get();
+      for (var clubData in clubsData.docs) {
+        final Map<String, dynamic> documents = clubData.data();
+        if (documents["admins"].contains(userEmail)) {
+          return club.name == clubData.id;
+        }
+      }
+    }
+
+    return false;
   }
 }

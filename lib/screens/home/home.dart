@@ -1,3 +1,4 @@
+import 'package:campus_clubs/data/upload_json_to_db.dart';
 import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
@@ -44,9 +45,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.detached:
-      // _setUserJoinedClubs();
+      // _update();
       case AppLifecycleState.resumed:
-      // _doSomething();
+      //  _update();
       case AppLifecycleState.inactive:
         _updateFireStore();
       case AppLifecycleState.hidden:

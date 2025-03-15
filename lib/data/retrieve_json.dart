@@ -10,14 +10,26 @@ class AllClubsFromWeb {
     final List data = await json.decode(response);
 
     for (final obj in data) {
+      List<String> adminEmails = [];
+
+      if (obj["president_email"] != null) {
+        adminEmails.add(obj["president_email"]);
+      }
+
+      if (obj["advisor_email"] != null) {
+        adminEmails.add(obj["advisor_email"]);
+      }
+
       clubs.add(
         Club(
-          name: obj["title"],
+          name: obj["name"],
           description: obj["description"],
           president: obj["president"],
           advisor: obj["advisor"],
           meetingTime: "",
           recommendedTime: "",
+          adminEmails: adminEmails,
+          adminIDs: [],
         ),
       );
     }

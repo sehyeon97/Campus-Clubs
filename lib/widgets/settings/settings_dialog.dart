@@ -1,3 +1,4 @@
+import 'package:campus_clubs/notification_service.dart';
 import 'package:campus_clubs/widgets/settings/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,13 @@ class Settings extends ConsumerWidget {
           const Text("Profile"),
           const SizedBox(height: 20),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              NotificationService().showNotification(
+                id: 1,
+                title: 'Test title',
+                body: 'Test body',
+              );
+            },
             icon: const Icon(Icons.notifications),
           ),
           const Text("Notifications"),
