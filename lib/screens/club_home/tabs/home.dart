@@ -3,7 +3,6 @@ import 'package:campus_clubs/providers/selected_club_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:campus_clubs/screens/club_home/selected_club_home.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 
