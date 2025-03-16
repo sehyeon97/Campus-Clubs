@@ -1,4 +1,3 @@
-import 'package:campus_clubs/data/upload_json_to_db.dart';
 import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/users_available_clubs.dart';
@@ -64,7 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _updateFireStore() async {
     final availableClubs = ref.watch(userAvailableProvider);
-    final originalAvailableClubs = await Firestore.loadAvailableClubs(userID);
+    final originalAvailableClubs = await Firestore.loadAvailableClubs();
 
     if (availableClubs.length != originalAvailableClubs.length) {
       await Firestore.updateAvailableAndJoinedClubs(

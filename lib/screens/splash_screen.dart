@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void _onPageLoad() async {
     ref
         .read(userAvailableProvider.notifier)
-        .set(await Firestore.loadAvailableClubs(userID));
+        .set(await Firestore.loadAvailableClubs());
   }
 
   @override

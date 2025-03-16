@@ -1,4 +1,3 @@
-import 'package:campus_clubs/providers/feedback.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:email_auth/email_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +50,9 @@ class _LoginState extends State<Login> {
   //       _enteredEmail.length < 16;
   // }
 
-  Future<bool> _sendOTP() async {
-    return await emailAuth.sendOtp(recipientMail: _enteredEmail, otpLength: 5);
-  }
+  // Future<bool> _sendOTP() async {
+  //   return await emailAuth.sendOtp(recipientMail: _enteredEmail, otpLength: 5);
+  // }
 
   // make upload_json_to_db.dart also upload each club's president and advisor
   // emails to the respective club data admin email list in FireStore

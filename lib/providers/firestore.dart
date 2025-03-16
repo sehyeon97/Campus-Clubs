@@ -36,8 +36,9 @@ class Firestore {
   }
 
   // return a list of available Clubs
-  static Future<List<Club>> loadAvailableClubs(String userID) async {
+  static Future<List<Club>> loadAvailableClubs() async {
     List<Club> clubs = [];
+    final userID = _fbAuth.currentUser!.uid;
     final userData = await _fb.collection('users').doc(userID).get();
     final List usersAvailableClubs = userData.data()!['available_clubs'];
 
@@ -52,8 +53,8 @@ class Firestore {
             advisor: doc["advisor"],
             meetingTime: doc["meeting_time"],
             recommendedTime: doc["recommended_time"],
-            adminEmails: doc["admin_emails"] ?? [],
-            adminIDs: doc["admin_ids"],
+            adminEmails: [],
+            adminIDs: [],
           ),
         );
       }
@@ -175,12 +176,36 @@ class Firestore {
       final clubsData = await _fb.collection('clubs').get();
       for (var clubData in clubsData.docs) {
         final Map<String, dynamic> documents = clubData.data();
-        if (documents["admins"].contains(userEmail)) {
+        List admins = documents["admin_emails"];
+
+        if (admins.contains(userEmail)) {
           return club.name == clubData.id;
         }
       }
     }
 
     return false;
+  }
+
+  static Future<void> createAnnouncementFor(
+      Club club, String announcementTitle, String content) async {
+    final authorData =
+        await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
+    final String author = authorData['name'];
+
+    await _fb
+        .collection('clubs')
+        .doc(club.name)
+        .collection('announcements')
+        .doc(announcementTitle)
+        .set(
+      {
+        "author": author,
+        "title": announcementTitle,
+        "body": content,
+        "timestamp": DateTime.now(),
+      },
+      SetOptions(merge: true),
+    );
   }
 }
