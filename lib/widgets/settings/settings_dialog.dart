@@ -30,7 +30,6 @@ class Settings extends ConsumerWidget {
           IconButton(
             onPressed: () {
               NotificationService().showNotification(
-                id: 1,
                 title: 'Test title',
                 body: 'Test body',
               );

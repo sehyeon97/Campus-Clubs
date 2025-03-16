@@ -1,11 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
-  // static final NotificationService _instance = NotificationService._internal();
-  // factory NotificationService() => _instance;
-  // NotificationService._internal();
-
-  final _isInitialized = false;
+  bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
 
@@ -40,13 +36,14 @@ class NotificationService {
 
     // finish initialization
     await _flutterLocalNotificationsPlugin.initialize(settings);
+    _isInitialized = true;
   }
 
   // Notification detail setup
   NotificationDetails notificationDetails() {
     return const NotificationDetails(
       android: AndroidNotificationDetails(
-        '160794467',
+        'my_channel_id',
         'my_channel_name',
         channelDescription: 'My channel notifications',
         importance: Importance.max,
@@ -58,16 +55,23 @@ class NotificationService {
 
 // most important method in class
   Future<void> showNotification({
-    required int id,
     required String title,
     required String body,
   }) async {
     try {
-      await _flutterLocalNotificationsPlugin.show(
+      return _flutterLocalNotificationsPlugin.show(
         0,
         "Test Title",
         "Test Body",
-        notificationDetails(),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'my_channel_id',
+            'my_channel_name',
+            channelDescription: 'My channel notifications',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+        ),
       );
     } catch (e) {
       print("Error showing notification: $e");

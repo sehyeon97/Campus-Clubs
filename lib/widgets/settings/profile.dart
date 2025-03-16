@@ -35,36 +35,7 @@ class _ProfileState extends ConsumerState<Profile> {
         title: const Text('Profile'),
       ),
       body: Column(
-        children: [
-          const Text('Enter Admin Access Pin to gain Admin Status'),
-          TextField(
-            controller: textController,
-            autocorrect: false,
-            obscureText: false,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Admin Access Pin',
-            ),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              // TODO: This will not be necessary when web scraping extracts president and advisor
-              final SnackBar snackBar;
-              if (textController.text == '1234') {
-                snackBar = const SnackBar(content: Text('Access Granted.'));
-              } else {
-                snackBar =
-                    const SnackBar(content: Text('Access cannot be granted.'));
-              }
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-              // check if user's uid exists in adminID first
-              // add this user's uid to adminID
-              Firestore.isAdmin(selectedClub);
-            },
-            child: const Text('Get Access'),
-          ),
-        ],
+        children: [],
       ),
     );
   }
