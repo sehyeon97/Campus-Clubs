@@ -4,10 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
 const double heightGap = 25;
+
+// FA24.pdf does not work because it's not a valid pdf file
+// u can view this by clicking the pdf file
+// const String pdfFilePath = "FA24.pdf";
+const String pdfFilePath = "spring25.pdf";
 
 class MeetingTime extends ConsumerStatefulWidget {
   const MeetingTime({
@@ -72,7 +78,10 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
                       children: [
                         const Text(
                           'Meeting Time',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
@@ -103,7 +112,10 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
                       children: [
                         const Text(
                           "Recommended",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
@@ -129,9 +141,17 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
             ),
             child: const Text(
               "Submit your current schedule for the semester to update time",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
               textAlign: TextAlign.center,
             ),
+          ),
+          const SizedBox(height: heightGap),
+          const OutlinedButton(
+            onPressed: _extractAllText,
+            child: Text("Extract Text from PDF File"),
           ),
           const SizedBox(height: heightGap),
           OutlinedButton(
@@ -147,5 +167,32 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
         ],
       ),
     );
+  }
+}
+
+Future<void> _extractAllText() async {
+  //Load the existing PDF document.
+  PdfDocument document =
+      PdfDocument(inputBytes: await _readDocumentData(pdfFilePath));
+
+  //Create the new instance of the PdfTextExtractor.
+  PdfTextExtractor extractor = PdfTextExtractor(document);
+
+  //Extract all the text from the document.
+  String text = extractor.extractText();
+
+  //Display the text.
+  _showResult(text);
+}
+
+Future<List<int>> _readDocumentData(String name) async {
+  final ByteData data = await rootBundle.load('lib/data/$name');
+  return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+}
+
+void _showResult(String text) {
+  List<String> texts = text.split(' ');
+  for (String word in texts) {
+    print(word);
   }
 }
