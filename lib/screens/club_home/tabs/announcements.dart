@@ -1,12 +1,6 @@
 import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
-<<<<<<< HEAD
 import 'package:campus_clubs/providers/users_available_clubs.dart';
-=======
-import 'package:campus_clubs/providers/user_role_provider.dart';
-import 'package:campus_clubs/screens/club_home/admin_announcements_screen.dart';
-import 'package:campus_clubs/screens/club_home/member_announcements_screen.dart';
->>>>>>> 530919319c95cfb39abc160da53843659b023e57
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,7 +19,6 @@ class Announcements extends ConsumerStatefulWidget {
 class _AnnouncementsState extends ConsumerState<Announcements> {
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -141,16 +134,5 @@ class _AnnouncementsState extends ConsumerState<Announcements> {
         ],
       ),
     );
-=======
-    final Club club = ref.watch(selectedClubProvider);
-    final bool isAdmin =
-        ref.watch(userRoleProvider) == club.name ? true : false;
-
-    if (isAdmin) {
-      return const AdminAnnouncementsScreen();
-    }
-
-    return const MemberAnnouncementsScreen();
->>>>>>> 530919319c95cfb39abc160da53843659b023e57
   }
 }
