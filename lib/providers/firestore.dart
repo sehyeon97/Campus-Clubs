@@ -86,6 +86,12 @@ class Firestore {
     return clubs;
   }
 
+  // Load announcements for selected club
+  static Future<List<String>> loadAnnouncements(String clubID) async {
+    final clubData = await _fb.collection('clubs').doc(clubID).get();
+    return clubData.data()!['announcements'];
+  }
+
   // Remove name from user/joined_clubs
   static void removeClub(String clubName, String userID) async {
     final userData = await _fb.collection('users').doc(userID).get();
