@@ -6,6 +6,8 @@ class Club {
     required this.advisor,
     required this.meetingTime,
     required this.recommendedTime,
+    required this.adminEmails,
+    required this.adminIDs,
   });
 
   final String name;
@@ -14,6 +16,8 @@ class Club {
   final String advisor;
   final String meetingTime;
   final String recommendedTime;
+  final List<String> adminEmails;
+  final List<String> adminIDs;
 
   Map<String, dynamic> toMap() {
     return {

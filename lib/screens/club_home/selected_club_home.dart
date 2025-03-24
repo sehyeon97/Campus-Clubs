@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:campus_clubs/models/club.dart';
 import 'package:campus_clubs/providers/firestore.dart';
 import 'package:campus_clubs/providers/selected_club_provider.dart';
@@ -24,6 +26,7 @@ class ClubHome extends ConsumerStatefulWidget {
 
 class _ClubHomeState extends ConsumerState<ClubHome> {
   int _selectedIndex = 0;
+  bool isAdminInit = false;
 
   void onDrawerItemTap(int index) {
     setState(() {
@@ -34,19 +37,35 @@ class _ClubHomeState extends ConsumerState<ClubHome> {
   @override
   void initState() {
     super.initState();
-    _assignUserRole();
   }
 
-  // is the user an admin or member of said club
-  void _assignUserRole() async {
+  void adminInitialized() {
+    if (!isAdminInit) {
+      setState(() {
+        isAdminInit = true;
+      });
+    }
+  }
+
+  void _setUserStatus() async {
     final Club club = ref.watch(selectedClubProvider);
-    if (await Firestore.isAdmin(club)) {
+    final bool isAdmin = await _assignUserRole(club);
+    if (isAdmin) {
       ref.read(userRoleProvider.notifier).set(club.name);
     }
   }
 
+  // is the user an admin or member of said club
+  Future<bool> _assignUserRole(Club club) async {
+    return await Firestore.isAdmin(club);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!isAdminInit) {
+      _setUserStatus();
+    }
+
     final tabs = [
       Home(onDrawerItemTap: onDrawerItemTap),
       const Announcements(),

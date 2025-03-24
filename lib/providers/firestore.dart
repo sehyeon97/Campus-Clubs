@@ -36,8 +36,9 @@ class Firestore {
   }
 
   // return a list of available Clubs
-  static Future<List<Club>> loadAvailableClubs(String userID) async {
+  static Future<List<Club>> loadAvailableClubs() async {
     List<Club> clubs = [];
+    final userID = _fbAuth.currentUser!.uid;
     final userData = await _fb.collection('users').doc(userID).get();
     final List usersAvailableClubs = userData.data()!['available_clubs'];
 
@@ -52,6 +53,8 @@ class Firestore {
             advisor: doc["advisor"],
             meetingTime: doc["meeting_time"],
             recommendedTime: doc["recommended_time"],
+            adminEmails: [],
+            adminIDs: [],
           ),
         );
       }
@@ -78,6 +81,8 @@ class Firestore {
             advisor: doc["advisor"],
             meetingTime: doc["meeting_time"],
             recommendedTime: doc["recommended_time"],
+            adminEmails: doc["admin_emails"],
+            adminIDs: doc["admin_ids"],
           ),
         );
       }
@@ -159,14 +164,54 @@ class Firestore {
     return;
   }
 
+  // Pull up all users and get this user's email using user ID
+  // check all clubs and see if this email belongs to one of the clubs
+  // if the email matches with the club passed, return true
   static Future<bool> isAdmin(Club club) async {
-    final clubData = await _fb.collection('clubs').doc(club.name).get();
-    final List<String> admins = clubData.data()!['admins'];
+    final usersData = await _fb.collection('users').get();
+    String userEmail = "";
 
-    final userData =
+    for (var userData in usersData.docs) {
+      final String userID = userData.id;
+      if (userID == _fbAuth.currentUser!.uid) {
+        userEmail = userData.data()["email"];
+      }
+    }
+
+    if (userEmail != "") {
+      final clubsData = await _fb.collection('clubs').get();
+      for (var clubData in clubsData.docs) {
+        final Map<String, dynamic> documents = clubData.data();
+        List admins = documents["admin_emails"];
+
+        if (admins.contains(userEmail)) {
+          return club.name == clubData.id;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  static Future<void> createAnnouncementFor(
+      Club club, String announcementTitle, String content) async {
+    final authorData =
         await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
-    final String userEmail = userData.data()!['email'];
+    final String author = authorData['name'];
 
-    return admins.contains(userEmail);
+    await _fb
+        .collection('clubs')
+        .doc(club.name)
+        .collection('announcements')
+        .doc(announcementTitle)
+        .set(
+      {
+        "author": author,
+        "title": announcementTitle,
+        "body": content,
+        "timestamp": DateTime.now(),
+      },
+      SetOptions(merge: true),
+    );
   }
 }

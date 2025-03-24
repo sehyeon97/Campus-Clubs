@@ -21,19 +21,19 @@ class _CalendarViewState extends ConsumerState<CalendarView> {
     final DateTime today = DateTime.now();
     final semester = ref.watch(eventSemesterProvider);
 
-    void _eventPopup() {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [],
-                ),
-              ),
-            );
-          });
-    }
+    // void _eventPopup() {
+    //   showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         return const AlertDialog(
+    //           content: SingleChildScrollView(
+    //             child: Column(
+    //               children: [],
+    //             ),
+    //           ),
+    //         );
+    //       });
+    // }
 
     if (semester == Semester.fall) {
       return TableCalendar(

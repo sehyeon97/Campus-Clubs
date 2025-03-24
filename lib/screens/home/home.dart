@@ -44,9 +44,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.detached:
-      // _setUserJoinedClubs();
+      // _update();
       case AppLifecycleState.resumed:
-      // _doSomething();
+      //  _update();
       case AppLifecycleState.inactive:
         _updateFireStore();
       case AppLifecycleState.hidden:
@@ -63,7 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _updateFireStore() async {
     final availableClubs = ref.watch(userAvailableProvider);
-    final originalAvailableClubs = await Firestore.loadAvailableClubs(userID);
+    final originalAvailableClubs = await Firestore.loadAvailableClubs();
 
     if (availableClubs.length != originalAvailableClubs.length) {
       await Firestore.updateAvailableAndJoinedClubs(
