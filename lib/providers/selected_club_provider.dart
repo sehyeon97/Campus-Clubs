@@ -1,5 +1,7 @@
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/models/announcement.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:campus_clubs/providers/firestore.dart';
 
 class SelectedClubProvider extends StateNotifier<Club> {
   SelectedClubProvider()
@@ -24,4 +26,8 @@ class SelectedClubProvider extends StateNotifier<Club> {
 final selectedClubProvider =
     StateNotifierProvider<SelectedClubProvider, Club>((ref) {
   return SelectedClubProvider();
+});
+
+final announcementsProvider = FutureProvider.family<List<Announcement>, String>((ref, clubName) async {
+  return await Firestore.getAnnouncements(clubName);
 });

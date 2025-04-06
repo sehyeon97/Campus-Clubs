@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campus_clubs/models/club.dart';
+import 'package:campus_clubs/models/announcement.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -193,10 +194,8 @@ class Firestore {
     return false;
   }
 
-  static Future<void> createAnnouncementFor(
-      Club club, String announcementTitle, String content) async {
-    final authorData =
-        await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
+  static Future<void> createAnnouncementFor(Club club, String announcementTitle, String content) async {
+    final authorData = await _fb.collection('users').doc(_fbAuth.currentUser!.uid).get();
     final String author = authorData['name'];
 
     await _fb
@@ -206,12 +205,32 @@ class Firestore {
         .doc(announcementTitle)
         .set(
       {
-        "author": author,
-        "title": announcementTitle,
-        "body": content,
+        "message": content,
         "timestamp": DateTime.now(),
+        "author": author,
       },
       SetOptions(merge: true),
     );
+  }
+
+  static Future<List<Announcement>> getAnnouncements(String clubName) async {
+    final fbAnnouncements = await _fb
+      .collection('clubs')
+      .doc(clubName)
+      .collection('announcements')
+      .get();
+
+    List<Announcement> res = List<Announcement>.empty(growable: true);
+
+    for (var doc in fbAnnouncements.docs) {
+      res.add(Announcement(
+        title: doc.id,
+        message: doc["message"],
+        currentTime: (doc["timestamp"] as Timestamp).toDate(),
+        author: doc["author"],
+      ));
+    }
+
+    return res;
   }
 }
