@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:campus_clubs/algorithms/FindBestTimes.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
@@ -120,7 +121,8 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _time,
+                          FindBestTimes.runMain(),
+                          // _time,
                           style: const TextStyle(color: Colors.white70),
                           textAlign: TextAlign.center,
                         ),

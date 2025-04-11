@@ -225,7 +225,7 @@ class Firestore {
     for (var doc in fbAnnouncements.docs) {
       res.add(Announcement(
         title: doc.id,
-        message: doc["message"],
+        message: doc["body"],
         currentTime: (doc["timestamp"] as Timestamp).toDate(),
         author: doc["author"],
       ));
