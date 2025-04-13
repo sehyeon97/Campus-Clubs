@@ -3,20 +3,18 @@ import 'dart:math';
 import 'package:campus_clubs/models/timeslot.dart';
 
 class FindBestTimes {
-  static String runMain() {
-    const String filePath = "input.txt";
-
+  static String runMain(List<String> fileData) {
     // List<String> fileData = getFileData(filePath);
-    // List<Timeslot> timeslotData = toTimeslots(fileData);
+    List<Timeslot> timeslotData = toTimeslots(fileData);
     List<List<int>> schedule = createNewSchedule();
-    // schedule = addTimes(schedule, timeslotData);
+    schedule = addTimes(schedule, timeslotData);
 
-    final Random r = Random();
-    for (int i = 0; i < 7; i++) {
-      for (int j = 0; j < 73; j++) {
-        schedule[i][j] = r.nextInt(50);
-      }
-    }
+    // final Random r = Random();
+    // for (int i = 0; i < 7; i++) {
+    //   for (int j = 0; j < 73; j++) {
+    //     schedule[i][j] = r.nextInt(50);
+    //   }
+    // }
 
     int c = 'M'.codeUnitAt(0);
     int index;

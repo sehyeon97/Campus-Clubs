@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:campus_clubs/algorithms/FindBestTimes.dart';
+import 'package:campus_clubs/algorithms/find_best_times.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
 const String channel = "platform_channel";
@@ -27,6 +27,8 @@ class MeetingTime extends ConsumerStatefulWidget {
   }
 }
 
+String recTime = "Unknown";
+
 // implement two things:
 // 1) a time range showing the recommended time frame given the submitted schedules
 // 2) the decided meeting time by the president (zero if not decided)
@@ -34,23 +36,33 @@ class MeetingTime extends ConsumerStatefulWidget {
 // 4) a popup for any errors encountered with appropriate dialogs
 // 5) a button that reveals a form for users to enter a preferred meeting time manually
 class _MeetingTimeState extends ConsumerState<MeetingTime> {
-  static const platform = MethodChannel('java/bestTimes');
-
   String _time = "Unknown";
+  String _recTime = "Unknown";
 
-  Future<void> _getMain() async {
-    String time;
-    try {
-      final result = await platform.invokeMethod<String>('runMain');
-      time = '$result';
-    } on PlatformException catch (e) {
-      time = 'Platform not supported';
-    } on MissingPluginException catch (e) {
-      time = 'Method not found';
-    }
+  void _getMain() {
+    String time = "Unknown";
 
     setState(() {
       _time = time;
+    });
+  }
+
+  Future<void> extractAllText() async {
+    //Load the existing PDF document.
+    PdfDocument document =
+      PdfDocument(inputBytes: await _readDocumentData(pdfFilePath));
+
+    //Create the new instance of the PdfTextExtractor.
+    PdfTextExtractor extractor = PdfTextExtractor(document);
+
+    //Extract all the text from the document.
+    String text = extractor.extractText();
+
+    //Display the text.
+    String result = outputResult(text);
+
+    setState(() {
+      _recTime = result;
     });
   }
 
@@ -121,8 +133,7 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          FindBestTimes.runMain(),
-                          // _time,
+                          _recTime,
                           style: const TextStyle(color: Colors.white70),
                           textAlign: TextAlign.center,
                         ),
@@ -151,11 +162,6 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
             ),
           ),
           const SizedBox(height: heightGap),
-          const OutlinedButton(
-            onPressed: _extractAllText,
-            child: Text("Extract Text from PDF File"),
-          ),
-          const SizedBox(height: heightGap),
           OutlinedButton(
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -163,7 +169,7 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
             ),
             child: const Text("Find Best Time"),
             onPressed: () {
-              _getMain();
+              extractAllText();
             },
           ),
         ],
@@ -172,29 +178,21 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
   }
 }
 
-Future<void> _extractAllText() async {
-  //Load the existing PDF document.
-  PdfDocument document =
-      PdfDocument(inputBytes: await _readDocumentData(pdfFilePath));
-
-  //Create the new instance of the PdfTextExtractor.
-  PdfTextExtractor extractor = PdfTextExtractor(document);
-
-  //Extract all the text from the document.
-  String text = extractor.extractText();
-
-  //Display the text.
-  _showResult(text);
-}
-
 Future<List<int>> _readDocumentData(String name) async {
   final ByteData data = await rootBundle.load('lib/data/$name');
   return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 }
 
-void _showResult(String text) {
-  List<String> texts = text.split(' ');
+String outputResult(String text) {
+  List<String> texts = text.split('\n');
+  List<String> result = [];
+
   for (String word in texts) {
-    print(word);
+    if (word.contains("AM") || word.contains("PM")) {
+      print(word);
+      result.add(word);
+    }
   }
+
+  return FindBestTimes.runMain(result);
 }
