@@ -64,6 +64,7 @@ flutter:
   - lib/data/output.json
   - lib/data/FA24.pdf
   - lib/data/spring25.pdf
+  - lib/data/SP25.pdf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -8,13 +8,12 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:campus_clubs/algorithms/find_best_times.dart';
 
 final String userID = FirebaseAuth.instance.currentUser!.uid;
-const String channel = "platform_channel";
 const double heightGap = 25;
 
 // FA24.pdf does not work because it's not a valid pdf file
 // u can view this by clicking the pdf file
 // const String pdfFilePath = "FA24.pdf";
-const String pdfFilePath = "spring25.pdf";
+const String pdfFilePath = "FA24.pdf";
 
 class MeetingTime extends ConsumerStatefulWidget {
   const MeetingTime({
@@ -27,8 +26,6 @@ class MeetingTime extends ConsumerStatefulWidget {
   }
 }
 
-String recTime = "Unknown";
-
 // implement two things:
 // 1) a time range showing the recommended time frame given the submitted schedules
 // 2) the decided meeting time by the president (zero if not decided)
@@ -36,30 +33,15 @@ String recTime = "Unknown";
 // 4) a popup for any errors encountered with appropriate dialogs
 // 5) a button that reveals a form for users to enter a preferred meeting time manually
 class _MeetingTimeState extends ConsumerState<MeetingTime> {
-  String _time = "Unknown";
   String _recTime = "Unknown";
 
-  void _getMain() {
-    String time = "Unknown";
-
-    setState(() {
-      _time = time;
-    });
-  }
-
   Future<void> extractAllText() async {
-    //Load the existing PDF document.
     PdfDocument document =
-      PdfDocument(inputBytes: await _readDocumentData(pdfFilePath));
-
-    //Create the new instance of the PdfTextExtractor.
+        PdfDocument(inputBytes: await _readDocumentData(pdfFilePath));
     PdfTextExtractor extractor = PdfTextExtractor(document);
-
-    //Extract all the text from the document.
     String text = extractor.extractText();
-
-    //Display the text.
-    String result = outputResult(text);
+    String normalizedText = _normalizeText(text);
+    String result = outputResult(normalizedText);
 
     setState(() {
       _recTime = result;
@@ -178,21 +160,61 @@ class _MeetingTimeState extends ConsumerState<MeetingTime> {
   }
 }
 
+String _normalizeText(String text) {
+  text = text.replaceAll(RegExp(r'\u00A0'), ' ');
+  text = text.replaceAll(RegExp(r'[ \t]+'), ' ');
+
+  text = text
+      .split('\n')
+      .map((line) => line.trim())
+      .join('\n');
+
+  return text;
+}
+
 Future<List<int>> _readDocumentData(String name) async {
   final ByteData data = await rootBundle.load('lib/data/$name');
   return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 }
 
 String outputResult(String text) {
-  List<String> texts = text.split('\n');
+  List<String> lines = text.split('\n');
   List<String> result = [];
 
-  for (String word in texts) {
-    if (word.contains("AM") || word.contains("PM")) {
-      print(word);
-      result.add(word);
+  for (String line in lines) {
+    if (line.contains("AM") || line.contains("PM")) {
+      result.add(line);
     }
   }
 
-  return FindBestTimes.runMain(result);
+  List<String> resultRunMain = expandSchedule(result);
+  print(resultRunMain);
+
+  return FindBestTimes.runMain(resultRunMain);
+}
+
+List<String> expandSchedule(List<String> inputList) {
+  List<String> expanded = [];
+
+  final validPattern = RegExp(r'^[MTWRF]+ \d{2}:\d{2}-\d{2}:\d{2}[AP]M$');
+
+  for (String entry in inputList) {
+    final cleaned = entry.trim();
+
+    if (!validPattern.hasMatch(cleaned)) {
+      continue;
+    }
+
+    final match = RegExp(r'^([MTWRF]+)\s+(.+)$').firstMatch(cleaned);
+    if (match != null) {
+      String days = match.group(1)!;
+      String time = match.group(2)!;
+
+      for (int i = 0; i < days.length; i++) {
+        expanded.add('${days[i]} $time');
+      }
+    }
+  }
+
+  return expanded;
 }
